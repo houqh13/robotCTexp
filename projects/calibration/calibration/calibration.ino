@@ -13,8 +13,8 @@ void setup() {
 	ARMPORT.begin(115200, SERIAL_8N1);
 	Arm.initialMove();
 
-	// (0, 207.5, -29) is the preset position
-	Arm.moveIK5(PVector(0, 207.5, -29), PVector(0, 0, -1));
+	// set the preset position
+	Arm.moveIK5(PVector(-50, 177.5, -29), PVector(0, 0, -1));
 
 	// receive current detected position
 	// input 254(0xFE), 253(0xFD), 1 in the serial monitor in order
