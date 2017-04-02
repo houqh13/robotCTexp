@@ -1,12 +1,12 @@
 /*
- Name:		offset_n.ino
- Created:	2017/3/29 14:08:41
+ Name:		offset_s.ino
+ Created:	2017/4/2 16:05:23
  Author:	houqh13
 */
 
 #include <Arm7Bot.h>
 Arm7Bot Arm;
-double offset_n[5] = {-3.792, 1.223, -5.861, 0.888, 1.537};
+double offset_n[5] = {-7.364, 4.921, -4.972, -4.765, 6.628};
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -24,3 +24,4 @@ void setup() {
 void loop() {
 	Arm.receiveCom();
 }
+

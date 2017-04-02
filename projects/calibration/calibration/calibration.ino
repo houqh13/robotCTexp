@@ -12,9 +12,10 @@ Arm7Bot Arm;
 void setup() {
 	ARMPORT.begin(115200, SERIAL_8N1);
 	Arm.initialMove();
+	lowSpeed();
 
 	// set the preset position
-	Arm.moveIK5(PVector(-50, 177.5, -29), PVector(0, 0, -1));
+	Arm.moveIK5(PVector(125, 177.5, -29), PVector(0, 0, -1));
 
 	// receive current detected position
 	// input 254(0xFE), 253(0xFD), 1 in the serial monitor in order
@@ -38,4 +39,14 @@ void loop() {
 	// input 254(0xFE), 253(0xFD), 1 in the serial monitor in order
 	// repeat several times to get a better result
 	Arm.receiveCom();
+}
+
+void lowSpeed() {
+	Arm.maxSpeed[0] = 15;
+	Arm.maxSpeed[1] = 20;
+	Arm.maxSpeed[2] = 20;
+	Arm.maxSpeed[3] = 30;
+	Arm.maxSpeed[4] = 30;
+	Arm.maxSpeed[5] = 30;
+	Arm.maxSpeed[6] = 30;
 }
