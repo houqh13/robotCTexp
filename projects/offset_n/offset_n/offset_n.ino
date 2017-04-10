@@ -6,7 +6,8 @@
 
 #include <Arm7Bot.h>
 Arm7Bot Arm;
-double offset_n[5] = {-3.792, 1.223, -5.861, 0.888, 1.537};
+double offset_n[5] = {-4.526, 0.99, -6.134, 3.421, 1.08};
+
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -16,8 +17,7 @@ void setup() {
 	{
 		Arm.offset[i] = offset_n[i];
 	}
-	double initial_pos[7] = {90, 115, 65, 90, 90, 90, 75};
-	Arm.move(initial_pos);
+	Arm.moveIK5(PVector(0, 165, 200), PVector(0, 1, 0));
 }
 
 // the loop function runs over and over again until power down or reset

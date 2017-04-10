@@ -14,22 +14,20 @@ void setup() {
 	Arm.initialMove();
 	lowSpeed();
 
-	// set the preset position
-	Arm.moveIK5(PVector(125, 177.5, -29), PVector(0, 0, -1));
+	for (double i = -100; i <= 100; i += 10) {
+		// set the preset position
+		//Arm.moveIK5(PVector(-125, 177.5, -29), PVector(0, 0, -1));
+		Arm.moveIK5(PVector(i, 177.5, -29), PVector(0, 0, -1));
+		delay(1000);
 
-	// receive current detected position
-	// input 254(0xFE), 253(0xFD), 1 in the serial monitor in order
-	// WARNING: DO NOT input other characters & numbers!!!
-	for (int i = 0; i < 3; i++)
-	{
-		while (!ARMPORT.available())
-		{
-			delay(10);
-		}
-		Arm.receiveCom();
+		// receive current detected position
+		Arm.getPosD();
+		Arm.getPosD();
+		Arm.getPosD();
 	}
 
-	Arm.initialMove();
+	//Arm.initialMove();
+
 	Arm.forcelessMode();
 }
 
