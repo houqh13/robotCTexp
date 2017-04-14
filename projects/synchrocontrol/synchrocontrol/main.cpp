@@ -11,7 +11,7 @@ int main() {
 	// 创建串口句柄
 	// 设置串口访问类型为可读可写, 串口打开方式为同步I/O
 	hCom3 = CreateFile(L"Com3", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
-	//hCom4 = CreateFile(L"Com4", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+	hCom4 = CreateFile(L"Com4", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 
 	// 检测串口连接情况
 	if (hCom3 == INVALID_HANDLE_VALUE)
@@ -24,10 +24,20 @@ int main() {
 	{
 		printf("Open Com3 success!\n");
 	}
+	if (hCom4 == INVALID_HANDLE_VALUE)
+	{
+		int errorCode = GetLastError();
+		printf("Open Com4 failed with error %d.\n", errorCode);
+		return -1;
+	}
+	else
+	{
+		printf("Open Com4 success!\n");
+	}
 
 	// 配置串口
 	SetupComm(hCom3, 1024, 1024);		// 缓冲区大小
-	//COMMTIMEOUTS timeouts;
+	SetupComm(hCom4, 1024, 1024);
 	DCB dcb;
 	GetCommState(hCom3, &dcb);
 	dcb.BaudRate = CBR_115200;			// 波特率
@@ -35,10 +45,13 @@ int main() {
 	dcb.Parity = NOPARITY;				// 校验位
 	dcb.StopBits = ONESTOPBIT;			// 停止位
 	SetCommState(hCom3, &dcb);
+	SetCommState(hCom4, &dcb);
 
-	PurgeComm(hCom3, PURGE_RXCLEAR | PURGE_TXCLEAR);		// 清空缓冲区
+	// 清空缓冲区
+	PurgeComm(hCom3, PURGE_RXCLEAR | PURGE_TXCLEAR);
+	PurgeComm(hCom4, PURGE_RXCLEAR | PURGE_TXCLEAR);
 
-	char *writeBuffer[3] = {"254", "253", "1"};				// 待发指令
+	char *writeBuffer[2] = {"254", "1"};				// 待发指令
 	DWORD writeBytes;
 	char readBuffer[1024];
 	DWORD readBytes;

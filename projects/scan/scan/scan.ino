@@ -14,14 +14,17 @@ void setup() {
 	{
 		Arm.offset[i] = offset_n[i];
 	}
-	Arm.initialMove();
 	lowSpeed();
-	delay(10000);
-	circlePoses(0, 265, 200, 100, 90, 4.5);
 }
 
 // the loop function runs over and over again until power down or reset
 void loop() {
+	Arm.additionCom();
+	if (Arm.actionFlag)
+	{
+		circlePoses(0, 265, 200, 100, 90, 4.5);
+		Arm.actionFlag = false;
+	}
 }
 
 // Make the end of 7Bot revolve around a point on a horizontal plane
@@ -63,14 +66,4 @@ void lowSpeed() {
 	Arm.maxSpeed[4] = 30;
 	Arm.maxSpeed[5] = 30;
 	Arm.maxSpeed[6] = 30;
-}
-
-void normalSpeed() {
-	Arm.maxSpeed[0] = 60;
-	Arm.maxSpeed[1] = 80;
-	Arm.maxSpeed[2] = 80;
-	Arm.maxSpeed[3] = 120;
-	Arm.maxSpeed[4] = 120;
-	Arm.maxSpeed[5] = 120;
-	Arm.maxSpeed[6] = 120;
 }
