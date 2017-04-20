@@ -59,11 +59,11 @@ void circlePoses(double x, double y, double z, double r, double angle, double de
 }
 
 void lowSpeed() {
-	Arm.maxSpeed[0] = 15;
-	Arm.maxSpeed[1] = 20;
-	Arm.maxSpeed[2] = 20;
-	Arm.maxSpeed[3] = 30;
-	Arm.maxSpeed[4] = 30;
-	Arm.maxSpeed[5] = 30;
-	Arm.maxSpeed[6] = 30;
+	Arm.maxSpeed[0] = 30;
+	Arm.maxSpeed[1] = 40;
+	Arm.maxSpeed[2] = 40;
+	Arm.maxSpeed[3] = 50;
+	Arm.maxSpeed[4] = 60;
+	Arm.maxSpeed[5] = 60;
+	Arm.maxSpeed[6] = 60;
 }

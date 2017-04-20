@@ -1,6 +1,9 @@
+#include <opencv.hpp>
 #include <stdio.h>
 #include <string>
 #include <Windows.h>
+
+using namespace cv;
 using namespace std;
 
 int main() {
@@ -51,15 +54,79 @@ int main() {
 	PurgeComm(hCom3, PURGE_RXCLEAR | PURGE_TXCLEAR);
 	PurgeComm(hCom4, PURGE_RXCLEAR | PURGE_TXCLEAR);
 
-	char *writeBuffer[2] = {"254", "1"};				// 待发指令
+	//char *writeBuffer[2] = {"254", "1"};				// 待发指令
+	char writeBuffer[2] = {0xFE, 0x2};
 	DWORD writeBytes;
-	char readBuffer[1024];
+	char readBuffer3[256];
+	char readBuffer4[256];
 	DWORD readBytes;
+	
+	Mat frame;							// 图像缓存
+	VideoCapture capture(0);			// 连接摄像头
 
-	Sleep(7500);
+	// 主循环
+	// 流程: 接收机械臂返回指令(上一步运动结束), 采集图像, 判断运动是否结束, 若结束则退出循环, 若未结束, 则发送下一步运动指令, 并进入下一循环
+	while (true)
+	{
+		// 接收指令
+		while (true)
+		{
+			if (!ReadFile(hCom3, readBuffer3, strlen(readBuffer3), &readBytes, NULL))
+			{
+				int errorCode = GetLastError();
+				printf("Read Com3 failed with error %d.\n", errorCode);
+				return -1;
+			}
+			if (readBuffer3[0] == 0xFE && readBuffer3[1] == 0x3)
+			{
+				break;
+			}
+		}
+		while (true)
+		{
+			if (!ReadFile(hCom4, readBuffer4, strlen(readBuffer4), &readBytes, NULL))
+			{
+				int errorCode = GetLastError();
+				printf("Read Com4 failed with error %d.\n", errorCode);
+				return -1;
+			}
+			if (readBuffer4[0] == 0xFE && readBuffer4[1] == 0x3)
+			{
+				break;
+			}
+		}
+
+		Sleep(500);						// 待机械臂稳定
+
+		// 采集图像
+		capture >> frame;
+		imshow("test", frame);
+
+		// 判断运动是否结束
+		ReadFile(hCom3, readBuffer3, strlen(readBuffer3), &readBytes, NULL);
+		if (readBuffer4[0] == 0xFE && readBuffer4[1] == 0x4)
+		{
+			break;
+		}
+
+		// 发送指令
+		if (!WriteFile(hCom3, writeBuffer, strlen(writeBuffer), &writeBytes, NULL))
+		{
+			int errorCode = GetLastError();
+			printf("Write Com3 failed with error %d.\n", errorCode);
+			return -1;
+		}
+		if (!WriteFile(hCom4, writeBuffer, strlen(writeBuffer), &writeBytes, NULL))
+		{
+			int errorCode = GetLastError();
+			printf("Write Com4 failed with error %d.\n", errorCode);
+			return -1;
+		}
+	}
+	
 
 	// 发送指令
-	for (int i = 0; i < 3; i++)
+	/*for (int i = 0; i < 2; i++)
 	{
 		if (!WriteFile(hCom3, writeBuffer[i], strlen(writeBuffer[i]), &writeBytes, NULL))
 		{
@@ -68,19 +135,10 @@ int main() {
 			return -1;
 		}
 		Sleep(1000);
-	}
-	Sleep(500);
-
-	// 接收返回信息
-	if (!ReadFile(hCom3, readBuffer, strlen(readBuffer), &readBytes, NULL))
-	{
-		int errorCode = GetLastError();
-		printf("Read Com3 failed with error %d.\n", errorCode);
-		return -1;
-	}
+	}*/
 
 	// 去除后半部分无用字符
-	string str = "";
+	/*string str = "";
 	for (int i = 0; i < strlen(readBuffer); i++)
 	{
 		if (readBuffer[i] < 0)
@@ -89,10 +147,11 @@ int main() {
 		}
 		str += readBuffer[i];
 	}
-	printf(str.c_str());
+	printf(str.c_str());*/
 
 	// 关闭串口
 	CloseHandle(hCom3);
+	CloseHandle(hCom4);
 
 	return 0;
 }
