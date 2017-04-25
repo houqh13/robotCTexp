@@ -20,10 +20,9 @@ void setup() {
 // the loop function runs over and over again until power down or reset
 void loop() {
 	Arm.additionCom();
-	if (Arm.actionFlag)
+	if (Arm.allConverge())
 	{
-		circlePoses(0, 265, 200, 100, 90, 4.5);
-		Arm.actionFlag = false;
+		Arm.sendToPC(1);
 	}
 }
 

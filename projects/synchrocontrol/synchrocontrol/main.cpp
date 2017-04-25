@@ -77,7 +77,7 @@ int main() {
 				printf("Read Com3 failed with error %d.\n", errorCode);
 				return -1;
 			}
-			if (readBuffer3[0] == 0xFE && readBuffer3[1] == 0x3)
+			if (readBuffer3[0] == 0xFD && readBuffer3[1] == 0x1)
 			{
 				break;
 			}
@@ -90,11 +90,11 @@ int main() {
 				printf("Read Com4 failed with error %d.\n", errorCode);
 				return -1;
 			}
-			if (readBuffer4[0] == 0xFE && readBuffer4[1] == 0x3)
+			if (readBuffer4[0] == 0xFD && readBuffer4[1] == 0x1)
 			{
 				break;
 			}
-		}
+		}  
 
 		Sleep(500);						// 待机械臂稳定
 
@@ -104,7 +104,7 @@ int main() {
 
 		// 判断运动是否结束
 		ReadFile(hCom3, readBuffer3, strlen(readBuffer3), &readBytes, NULL);
-		if (readBuffer4[0] == 0xFE && readBuffer4[1] == 0x4)
+		if (readBuffer4[0] == 0xFD && readBuffer4[1] == 0x2)
 		{
 			break;
 		}
