@@ -1,0 +1,17 @@
+﻿生成启动时间为 2017/5/7 1:09:12。
+     1>项目“C:\Users\fz201\Desktop\7BotSystem\7BotSystem\7BotSystem.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         E:\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\7BotSystem.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ComRcvThread.cpp
+         ComRcvThread.cpp
+       Link:
+         E:\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\fz201\Desktop\7BotSystem\Debug\7BotSystem.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"E:\Microsoft Visual Studio 11.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"C:\Users\fz201\Desktop\7BotSystem\Debug\7BotSystem.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\fz201\Desktop\7BotSystem\Debug\7BotSystem.lib" /MACHINE:X86 Debug\7BotSystem.res
+         Debug\7BotSystem.obj
+         Debug\7BotSystemDlg.obj
+         Debug\ComRcvThread.obj
+         Debug\stdafx.obj
+         7BotSystem.vcxproj -> C:\Users\fz201\Desktop\7BotSystem\Debug\7BotSystem.exe
+     1>已完成生成项目“C:\Users\fz201\Desktop\7BotSystem\7BotSystem\7BotSystem.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:02.23
