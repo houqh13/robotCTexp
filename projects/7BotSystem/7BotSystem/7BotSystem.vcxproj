@@ -106,6 +106,7 @@
     <ClInclude Include="ComRcvThread.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SerialDlg.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -113,6 +114,7 @@
     <ClCompile Include="7BotSystem.cpp" />
     <ClCompile Include="7BotSystemDlg.cpp" />
     <ClCompile Include="ComRcvThread.cpp" />
+    <ClCompile Include="SerialDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

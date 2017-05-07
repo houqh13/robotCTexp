@@ -32,12 +32,14 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	ComRcvThread *thCom3;
-	ComRcvThread *thCom4;
+	CComRcvThread *m_thCom3;
+	CComRcvThread *m_thCom4;
 	afx_msg void OnBnClickedButtonStart();
 	afx_msg void OnBnClickedButtonOpenCom3();
 	afx_msg void OnBnClickedButtonOpenCom4();
 	afx_msg void OnBnClickedButtonCloseCom3();
 	afx_msg void OnBnClickedButtonCloseCom4();
 	afx_msg LRESULT OnComError(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnComSuccess(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

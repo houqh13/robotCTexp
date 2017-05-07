@@ -1,19 +1,19 @@
 #pragma once
 
+#include "SerialDlg.h"
 
+// CComRcvThread
 
-// ComRcvThread
-
-class ComRcvThread : public CWinThread
+class CComRcvThread : public CWinThread
 {
-	DECLARE_DYNCREATE(ComRcvThread)
+	DECLARE_DYNCREATE(CComRcvThread)
 
 protected:
-	ComRcvThread();           // 动态创建所使用的受保护的构造函数
-	virtual ~ComRcvThread();
+	CComRcvThread();           // 动态创建所使用的受保护的构造函数
+	virtual ~CComRcvThread();
 
 public:
-	ComRcvThread(CString comName);	//	带有初始化参数的构造函数
+	CComRcvThread(CString comName);	//	带有初始化参数的构造函数
 	virtual BOOL InitInstance();
 	virtual int ExitInstance();
 
@@ -21,9 +21,11 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	HANDLE hCom;
-	CString strCom;
+	HANDLE m_hCom;
+	CString m_sCom;
+	CSerialDlg *m_pSerialDlg;
 	afx_msg void OnCloseThread(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnReceive(WPARAM wParam, LPARAM lParam);
 };
 
 
