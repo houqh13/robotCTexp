@@ -23,6 +23,6 @@ public:
 	CString m_sText;
 	CEdit m_cText;
 	bool m_bAutoScroll;
-	CButton m_cAutoScroll;
+	CPoint m_nScroll;
 	afx_msg void OnBnClickedButtonAutoScroll();
 };

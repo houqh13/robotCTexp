@@ -5,6 +5,7 @@
 #pragma once
 
 #include "ComRcvThread.h"
+#include "SerialDlg.h"
 
 
 // CMy7BotSystemDlg ¶Ô»°¿ò
@@ -32,8 +33,8 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	CComRcvThread *m_thCom3;
-	CComRcvThread *m_thCom4;
+	CComRcvThread *m_thCom[2];
+	CSerialDlg *m_dlgCom[2];
 	afx_msg void OnBnClickedButtonStart();
 	afx_msg void OnBnClickedButtonOpenCom3();
 	afx_msg void OnBnClickedButtonOpenCom4();

@@ -1,7 +1,16 @@
-﻿生成启动时间为 2017/5/7 18:05:51。
+﻿生成启动时间为 2017/5/8 14:34:33。
      1>项目“C:\Users\houqh13\Documents\Arduino\Almighty\robotCTexp\projects\7BotSystem\7BotSystem\7BotSystem.vcxproj”在节点 2 上(Build 个目标)。
-     1>ResourceCompile:
-         C:\Program Files (x86)\Windows Kits\8.0\bin\x86\rc.exe /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /l"0x0804" /IDebug\ /nologo /fo"Debug\7BotSystem.res" 7BotSystem.rc 
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\7BotSystem.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt 7BotSystem.cpp 7BotSystemDlg.cpp ComRcvThread.cpp SerialDlg.cpp
+         SerialDlg.cpp
+         正在生成代码...
+         正在编译...
+         ComRcvThread.cpp
+     1>c:\users\houqh13\documents\arduino\almighty\robotctexp\projects\7botsystem\7botsystem\comrcvthread.cpp(116): warning C4018: “<”: 有符号/无符号不匹配
+         正在生成代码...
+         正在跳过...(未检测到相关更改)
+         7BotSystemDlg.cpp
+         7BotSystem.cpp
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\houqh13\Documents\Arduino\Almighty\robotCTexp\projects\7BotSystem\Debug\7BotSystem.exe" /INCREMENTAL /NOLOGO opencv_ts300d.lib opencv_world300d.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"C:\Users\houqh13\Documents\Arduino\Almighty\robotCTexp\projects\7BotSystem\Debug\7BotSystem.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\houqh13\Documents\Arduino\Almighty\robotCTexp\projects\7BotSystem\Debug\7BotSystem.lib" /MACHINE:X86 Debug\7BotSystem.res
          Debug\7BotSystem.obj
@@ -14,4 +23,4 @@
 
 生成成功。
 
-已用时间 00:00:00.53
+已用时间 00:00:01.79

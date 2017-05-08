@@ -3,12 +3,10 @@
 
 #include "stdafx.h"
 #include "7BotSystem.h"
+#include "7BotSystemDlg.h"
 #include "ComRcvThread.h"
 #include "define.h"
 
-#include <fcntl.h>
-#include <io.h>
-#include <iostream>
 #include <string>
 
 
@@ -19,14 +17,15 @@ IMPLEMENT_DYNCREATE(CComRcvThread, CWinThread)
 CComRcvThread::CComRcvThread()
 	: m_hCom(INVALID_HANDLE_VALUE)
 	, m_sCom("")
-	, m_pSerialDlg(NULL)
+	, m_sBuffer("")
 {
 }
 
-CComRcvThread::CComRcvThread(CString comName)
+CComRcvThread::CComRcvThread(CString comName, int ID)
 	: m_hCom(INVALID_HANDLE_VALUE)
 	, m_sCom(comName)
-	, m_pSerialDlg(NULL)
+	, m_sBuffer("")
+	, m_nID(ID)
 {
 }
 
@@ -64,14 +63,6 @@ BOOL CComRcvThread::InitInstance()
 	SetCommTimeouts(m_hCom, &timeouts);
 	PurgeComm(m_hCom, PURGE_RXCLEAR | PURGE_TXCLEAR);		// 清空缓冲区
 	
-
-	// 打开窗口输出串口信息
-	if (m_pSerialDlg == NULL)
-	{
-		m_pSerialDlg = new CSerialDlg();
-		m_pSerialDlg->Create(IDD_SERIAL_DIALOG);
-	}
-  	m_pSerialDlg->ShowWindow(SW_SHOW);
 	AfxGetApp()->m_pMainWnd->PostMessage(WM_COMSUCCESS, (int)(void *)this, NULL);
 
 	return TRUE;
@@ -80,12 +71,6 @@ BOOL CComRcvThread::InitInstance()
 int CComRcvThread::ExitInstance()
 {
 	// TODO: 在此执行任意逐线程清理
-
-	// 关闭窗口
-	if (m_pSerialDlg != NULL)
-	{
-		delete m_pSerialDlg;
-	}
 
 	return CWinThread::ExitInstance();
 }
@@ -112,7 +97,7 @@ void CComRcvThread::OnReceive(WPARAM wParam, LPARAM lParam)
 
 	if (ReadFile(m_hCom, readBuffer, strlen(readBuffer), &readBytes, NULL))
 	{
-		CString str = _T("");
+		m_sBuffer = "";
 		for (int i = 0; i < strlen(readBuffer); i++)
 		{
 			if (readBuffer[i] == (char)0xFE)
@@ -123,14 +108,23 @@ void CComRcvThread::OnReceive(WPARAM wParam, LPARAM lParam)
 			{
 				break;
 			}
-			str += readBuffer[i];
+			m_sBuffer += readBuffer[i];
 		}
-		m_pSerialDlg->m_sText += str;
-		m_pSerialDlg->UpdateData(FALSE);
-		if (m_pSerialDlg->m_bAutoScroll)
-		{
-			//(CEdit *)(m_pSerialDlg->GetDlgItem(IDC_EDIT_TEXT));
-		}
+		((CMy7BotSystemDlg *)AfxGetApp()->m_pMainWnd)->m_dlgCom[m_nID]->PostMessage(WM_BUFFERSHOW, (WPARAM)m_sBuffer, strlen(m_sBuffer));
+		//m_pSerialDlg->m_sText += str;
+		//if (m_pSerialDlg->m_bAutoScroll)
+		//{
+		//	m_pSerialDlg->UpdateData(FALSE);
+		//	m_pSerialDlg->m_cText.LineScroll(m_pSerialDlg->m_cText.GetLineCount());
+		//}
+		//else
+		//{
+		//	m_pSerialDlg->m_nScroll.x = m_pSerialDlg->m_cText.GetScrollPos(SB_HORZ);
+		//	m_pSerialDlg->m_nScroll.y = m_pSerialDlg->m_cText.GetScrollPos(SB_VERT);
+		//	m_pSerialDlg->UpdateData(FALSE);
+		//	m_pSerialDlg->m_cText.LineScroll(m_pSerialDlg->m_nScroll.y, m_pSerialDlg->m_nScroll.x);
+		//}
+		//m_pSerialDlg->Invalidate();
 	}
 }
 

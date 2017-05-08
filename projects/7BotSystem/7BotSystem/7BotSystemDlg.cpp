@@ -106,6 +106,11 @@ BOOL CMy7BotSystemDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	for (int i = 0; i < 2; i++)
+	{
+		m_thCom[i] = NULL;
+		m_dlgCom[i] = NULL;
+	}
 	GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_CLOSECOM4)->EnableWindow(FALSE);
 
@@ -173,8 +178,8 @@ void CMy7BotSystemDlg::OnBnClickedButtonStart()
 void CMy7BotSystemDlg::OnBnClickedButtonOpenCom3()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	m_thCom3 = new CComRcvThread(_T("Com3"));
-	if (m_thCom3->CreateThread())
+	m_thCom[0] = new CComRcvThread(_T("Com3"));
+	if (m_thCom[0]->CreateThread())
 	{
 		GetDlgItem(IDC_BUTTON_OPENCOM3)->EnableWindow(FALSE);
 		GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(TRUE);
@@ -185,8 +190,8 @@ void CMy7BotSystemDlg::OnBnClickedButtonOpenCom3()
 void CMy7BotSystemDlg::OnBnClickedButtonOpenCom4()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	m_thCom4 = new CComRcvThread(_T("Com4"));
-	if (m_thCom4->CreateThread())
+	m_thCom[1] = new CComRcvThread(_T("Com4"));
+	if (m_thCom[1]->CreateThread())
 	{
 		GetDlgItem(IDC_BUTTON_OPENCOM4)->EnableWindow(FALSE);
 		GetDlgItem(IDC_BUTTON_CLOSECOM4)->EnableWindow(TRUE);
@@ -197,40 +202,48 @@ void CMy7BotSystemDlg::OnBnClickedButtonOpenCom4()
 void CMy7BotSystemDlg::OnBnClickedButtonCloseCom3()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	m_thCom3->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
+	m_thCom[0]->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
 	GetDlgItem(IDC_BUTTON_OPENCOM3)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
+
+	// 关闭窗口
+	if (m_dlgCom[0] != NULL)
+	{
+		delete m_dlgCom[0];
+	}
 }
 
 
 void CMy7BotSystemDlg::OnBnClickedButtonCloseCom4()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	m_thCom4->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
+	m_thCom[1]->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
 	GetDlgItem(IDC_BUTTON_OPENCOM4)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_CLOSECOM4)->EnableWindow(FALSE);
+
+	// 关闭窗口
+	if (m_dlgCom[1] != NULL)
+	{
+		delete m_dlgCom[1];
+	}
 }
 
 
 LRESULT CMy7BotSystemDlg::OnComError(WPARAM wParam, LPARAM lParam)
 {
-	if (wParam == (int)(void *)m_thCom3)
+	for (int i = 0; i < 2; i++)
 	{
-		m_thCom3->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
-		m_thCom3 = NULL;
+		if (wParam == (int)(void *)m_thCom[i])
+		{
+			AfxMessageBox(m_thCom[i]->m_sCom + _T("无法打开！"));
 
-		AfxMessageBox(_T("Com3无法打开！"));
-		GetDlgItem(IDC_BUTTON_OPENCOM3)->EnableWindow(TRUE);
-		GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
-	}
-	else if (wParam == (int)(void *)m_thCom4)
-	{
-		m_thCom4->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
-		m_thCom4 = NULL;
+			m_thCom[i]->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
+			m_thCom[i] = NULL;
+			GetDlgItem(IDC_BUTTON_OPENCOM3)->EnableWindow(TRUE);
+			GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
 
-		AfxMessageBox(_T("Com4无法打开！"));
-		GetDlgItem(IDC_BUTTON_OPENCOM4)->EnableWindow(TRUE);
-		GetDlgItem(IDC_BUTTON_CLOSECOM4)->EnableWindow(FALSE);
+			break;
+		}
 	}
 	return 0;
 }
@@ -238,13 +251,22 @@ LRESULT CMy7BotSystemDlg::OnComError(WPARAM wParam, LPARAM lParam)
 
 LRESULT CMy7BotSystemDlg::OnComSuccess(WPARAM wParam, LPARAM lParam)
 {
-	if (wParam == (int)(void *)m_thCom3)
+	for (int i = 0; i < 2; i++)
 	{
-		SetTimer(3, 100, NULL);
-	}
-	else if (wParam == (int)(void *)m_thCom4)
-	{
-		SetTimer(4, 100, NULL);
+		if (wParam == (int)(void *)m_thCom[i])
+		{
+			SetTimer(i, 100, NULL);
+
+			// 打开窗口输出串口信息
+			if (m_dlgCom[i] == NULL)
+			{
+				m_dlgCom[i] = new CSerialDlg();
+				m_dlgCom[i]->Create(IDD_SERIAL_DIALOG);
+			}
+  			m_dlgCom[i]->ShowWindow(SW_SHOW);
+
+			break;
+		}
 	}
 	return 0;
 }
@@ -253,13 +275,12 @@ LRESULT CMy7BotSystemDlg::OnComSuccess(WPARAM wParam, LPARAM lParam)
 void CMy7BotSystemDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	if (nIDEvent == 3)
-	{
-		m_thCom3->PostThreadMessage(WM_RECEIVE, NULL, NULL);
-	}
-	else if (nIDEvent == 4)
-	{
-		m_thCom4->PostThreadMessage(WM_RECEIVE, NULL, NULL);
+	for (int i = 0; i < 2; i++)
+	{	
+		if (nIDEvent == i)
+		{
+			m_thCom[i]->PostThreadMessage(WM_RECEIVE, NULL, NULL);
+		}
 	}
 
 	CDialogEx::OnTimer(nIDEvent);

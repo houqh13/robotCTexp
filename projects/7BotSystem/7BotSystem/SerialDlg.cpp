@@ -15,6 +15,7 @@ CSerialDlg::CSerialDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CSerialDlg::IDD, pParent)
 	, m_sText(_T(""))
 	, m_bAutoScroll(true)
+	, m_nScroll((0, 0))
 {
 
 }
@@ -28,7 +29,6 @@ void CSerialDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT_TEXT, m_sText);
 	DDX_Control(pDX, IDC_EDIT_TEXT, m_cText);
-	DDX_Control(pDX, IDC_BUTTON_AUTOSCROLL, m_cAutoScroll);
 }
 
 
