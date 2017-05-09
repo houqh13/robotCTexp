@@ -4,7 +4,9 @@
 
 #pragma once
 
+#include "Arm7Bot.h"
 #include "ComRcvThread.h"
+#include "Define.h"
 #include "SerialDlg.h"
 
 
@@ -43,4 +45,12 @@ public:
 	afx_msg LRESULT OnComError(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnComSuccess(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+
+private:
+	Arm7Bot arm;
+	PVector center;
+	double radius;
+	double angle;
+	double delta;
+	int calculate();
 };

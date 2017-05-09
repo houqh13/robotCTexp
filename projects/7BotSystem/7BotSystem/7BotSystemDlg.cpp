@@ -6,7 +6,8 @@
 #include "7BotSystem.h"
 #include "7BotSystemDlg.h"
 #include "afxdialogex.h"
-#include "define.h"
+
+#include <math.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -114,6 +115,13 @@ BOOL CMy7BotSystemDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_CLOSECOM4)->EnableWindow(FALSE);
 
+	arm.theta[6] = 45.0;
+	center.x = 0.0;
+	center.y = 265.0;
+	center.z = 200.0;
+	radius = 65.0;
+	angle = 0.0;
+	delta = 5.0;
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -168,17 +176,10 @@ HCURSOR CMy7BotSystemDlg::OnQueryDragIcon()
 }
 
 
-
-void CMy7BotSystemDlg::OnBnClickedButtonStart()
-{
-	// TODO: 在此添加控件通知处理程序代码
-}
-
-
 void CMy7BotSystemDlg::OnBnClickedButtonOpenCom3()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	m_thCom[0] = new CComRcvThread(_T("Com3"));
+	m_thCom[0] = new CComRcvThread(_T("Com3"), 0);
 	if (m_thCom[0]->CreateThread())
 	{
 		GetDlgItem(IDC_BUTTON_OPENCOM3)->EnableWindow(FALSE);
@@ -190,7 +191,7 @@ void CMy7BotSystemDlg::OnBnClickedButtonOpenCom3()
 void CMy7BotSystemDlg::OnBnClickedButtonOpenCom4()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	m_thCom[1] = new CComRcvThread(_T("Com4"));
+	m_thCom[1] = new CComRcvThread(_T("Com4"), 1);
 	if (m_thCom[1]->CreateThread())
 	{
 		GetDlgItem(IDC_BUTTON_OPENCOM4)->EnableWindow(FALSE);
@@ -206,6 +207,8 @@ void CMy7BotSystemDlg::OnBnClickedButtonCloseCom3()
 	GetDlgItem(IDC_BUTTON_OPENCOM3)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
 
+	KillTimer(0);
+
 	// 关闭窗口
 	if (m_dlgCom[0] != NULL)
 	{
@@ -220,6 +223,8 @@ void CMy7BotSystemDlg::OnBnClickedButtonCloseCom4()
 	m_thCom[1]->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
 	GetDlgItem(IDC_BUTTON_OPENCOM4)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_CLOSECOM4)->EnableWindow(FALSE);
+
+	KillTimer(1);
 
 	// 关闭窗口
 	if (m_dlgCom[1] != NULL)
@@ -255,12 +260,12 @@ LRESULT CMy7BotSystemDlg::OnComSuccess(WPARAM wParam, LPARAM lParam)
 	{
 		if (wParam == (int)(void *)m_thCom[i])
 		{
-			SetTimer(i, 100, NULL);
+			SetTimer(i, 200, NULL);
 
 			// 打开窗口输出串口信息
 			if (m_dlgCom[i] == NULL)
 			{
-				m_dlgCom[i] = new CSerialDlg();
+				m_dlgCom[i] = new CSerialDlg(_T("Serial Monitor : ") + m_thCom[i]->m_sCom, (CWnd *)this);
 				m_dlgCom[i]->Create(IDD_SERIAL_DIALOG);
 			}
   			m_dlgCom[i]->ShowWindow(SW_SHOW);
@@ -284,4 +289,43 @@ void CMy7BotSystemDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CMy7BotSystemDlg::OnBnClickedButtonStart()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	if (calculate())
+	{
+		angle = - angle;
+		while (calculate())
+		{
+			angle += delta;
+		}
+	}
+	angle += delta;
+
+	for (int i = 0; i < 2; i++)
+	{
+		m_thCom[i]->PostThreadMessage(WM_MOVEANGLE, (WPARAM)arm.theta, NULL);
+	}
+	GetDlgItem(IDC_BUTTON_START)->EnableWindow(FALSE);
+}
+
+
+// CMy7BotSystemDlg 计算程序
+
+
+int CMy7BotSystemDlg::calculate()
+{
+	PVector j6(center);
+	PVector vec56;
+	PVector vec67(0.0, 0.0, 1.0);
+
+	j6.x += radius * sin(angle / 180 * PI);
+	j6.y -= radius * cos(angle / 180 * PI);
+	vec56.x = - sin(angle / 180 * PI);
+	vec56.y = cos(angle / 180 * PI);
+
+	return arm.IK6(j6, vec56, vec67);
 }

@@ -36,10 +36,16 @@
     <ClInclude Include="ComRcvThread.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="define.h">
+    <ClInclude Include="SerialDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SerialDlg.h">
+    <ClInclude Include="Arm7Bot.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PVector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -57,6 +63,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SerialDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Arm7Bot.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Pvector.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

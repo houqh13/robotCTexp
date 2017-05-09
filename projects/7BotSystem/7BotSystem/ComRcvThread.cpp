@@ -5,7 +5,7 @@
 #include "7BotSystem.h"
 #include "7BotSystemDlg.h"
 #include "ComRcvThread.h"
-#include "define.h"
+#include "Define.h"
 
 #include <string>
 
@@ -17,15 +17,15 @@ IMPLEMENT_DYNCREATE(CComRcvThread, CWinThread)
 CComRcvThread::CComRcvThread()
 	: m_hCom(INVALID_HANDLE_VALUE)
 	, m_sCom("")
-	, m_sBuffer("")
+	, m_bMoveFinish(false)
 {
 }
 
 CComRcvThread::CComRcvThread(CString comName, int ID)
 	: m_hCom(INVALID_HANDLE_VALUE)
 	, m_sCom(comName)
-	, m_sBuffer("")
 	, m_nID(ID)
+	, m_bMoveFinish(false)
 {
 }
 
@@ -78,6 +78,7 @@ int CComRcvThread::ExitInstance()
 BEGIN_MESSAGE_MAP(CComRcvThread, CWinThread)
 	ON_THREAD_MESSAGE(WM_CLOSETHREAD, OnCloseThread)
 	ON_THREAD_MESSAGE(WM_RECEIVE, OnReceive)
+	ON_THREAD_MESSAGE(WM_MOVEANGLE, OnMoveAngle)
 END_MESSAGE_MAP()
 
 
@@ -97,34 +98,53 @@ void CComRcvThread::OnReceive(WPARAM wParam, LPARAM lParam)
 
 	if (ReadFile(m_hCom, readBuffer, strlen(readBuffer), &readBytes, NULL))
 	{
-		m_sBuffer = "";
-		for (int i = 0; i < strlen(readBuffer); i++)
+		strcpy(m_sBuffer, "");
+		int i;
+		for (i = 0; i < strlen(readBuffer); i++)
 		{
-			if (readBuffer[i] == (char)0xFE)
+			if (readBuffer[i] == (char)0xFD)
 			{
+				if (readBuffer[i + 1] == (char)0x01)
+				{
+					m_bMoveFinish = true;
+					AfxGetApp()->m_pMainWnd->PostMessage(WM_MOVEFINISH, NULL, NULL);
+				}
 				// TODO...
 			}
 			else if (readBuffer[i] < 0)
 			{
 				break;
 			}
-			m_sBuffer += readBuffer[i];
+			m_sBuffer[i] = readBuffer[i];
 		}
-		((CMy7BotSystemDlg *)AfxGetApp()->m_pMainWnd)->m_dlgCom[m_nID]->PostMessage(WM_BUFFERSHOW, (WPARAM)m_sBuffer, strlen(m_sBuffer));
-		//m_pSerialDlg->m_sText += str;
-		//if (m_pSerialDlg->m_bAutoScroll)
-		//{
-		//	m_pSerialDlg->UpdateData(FALSE);
-		//	m_pSerialDlg->m_cText.LineScroll(m_pSerialDlg->m_cText.GetLineCount());
-		//}
-		//else
-		//{
-		//	m_pSerialDlg->m_nScroll.x = m_pSerialDlg->m_cText.GetScrollPos(SB_HORZ);
-		//	m_pSerialDlg->m_nScroll.y = m_pSerialDlg->m_cText.GetScrollPos(SB_VERT);
-		//	m_pSerialDlg->UpdateData(FALSE);
-		//	m_pSerialDlg->m_cText.LineScroll(m_pSerialDlg->m_nScroll.y, m_pSerialDlg->m_nScroll.x);
-		//}
-		//m_pSerialDlg->Invalidate();
+		m_sBuffer[i] = 0;
+		COPYDATASTRUCT cds;
+		cds.dwData = 0;
+		cds.cbData = strlen(m_sBuffer);
+		cds.lpData = (void *)m_sBuffer;
+		((CMy7BotSystemDlg *)AfxGetApp()->m_pMainWnd)->m_dlgCom[m_nID]->SendMessage(WM_COPYDATA, (WPARAM)this->m_hThread, (LPARAM)&cds);
 	}
 }
 
+
+void CComRcvThread::OnMoveAngle(WPARAM wParam, LPARAM lParam)
+{
+	double angles[SERVO_NUM];
+	char writeBuffer[2 * SERVO_NUM + 2];
+	DWORD writeBytes;
+	writeBuffer[0] = 0xFE;
+	writeBuffer[1] = 0x01;
+	for (int i = 0; i < SERVO_NUM; i++)
+	{
+		angles[i] = *(double *)(wParam + i * sizeof(double));
+		writeBuffer[2 * i + 2] = (int)(angles[i] / 0.18) / 128;
+		writeBuffer[2 * i + 3] = (int)(angles[i] / 0.18) % 128;
+	}
+
+	m_bMoveFinish = false;
+
+	if (!WriteFile(m_hCom, writeBuffer, strlen(writeBuffer), &writeBytes, NULL))
+	{
+		AfxMessageBox(m_sCom + _T("·¢ËÍÊ§°Ü£¡"));
+	}
+}

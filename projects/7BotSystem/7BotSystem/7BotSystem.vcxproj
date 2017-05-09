@@ -52,7 +52,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -103,8 +103,10 @@
   <ItemGroup>
     <ClInclude Include="7BotSystem.h" />
     <ClInclude Include="7BotSystemDlg.h" />
+    <ClInclude Include="Arm7Bot.h" />
     <ClInclude Include="ComRcvThread.h" />
-    <ClInclude Include="define.h" />
+    <ClInclude Include="Define.h" />
+    <ClInclude Include="PVector.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SerialDlg.h" />
     <ClInclude Include="stdafx.h" />
@@ -113,7 +115,9 @@
   <ItemGroup>
     <ClCompile Include="7BotSystem.cpp" />
     <ClCompile Include="7BotSystemDlg.cpp" />
+    <ClCompile Include="Arm7Bot.cpp" />
     <ClCompile Include="ComRcvThread.cpp" />
+    <ClCompile Include="Pvector.cpp" />
     <ClCompile Include="SerialDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

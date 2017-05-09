@@ -9,7 +9,7 @@ class CSerialDlg : public CDialogEx
 	DECLARE_DYNAMIC(CSerialDlg)
 
 public:
-	CSerialDlg(CWnd* pParent = NULL);   // 标准构造函数
+	CSerialDlg(CString title, CWnd* pParent = NULL);
 	virtual ~CSerialDlg();
 
 // 对话框数据
@@ -20,9 +20,12 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
+	CString m_sTitle;
 	CString m_sText;
 	CEdit m_cText;
 	bool m_bAutoScroll;
 	CPoint m_nScroll;
+	virtual BOOL OnInitDialog();
+	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
 	afx_msg void OnBnClickedButtonAutoScroll();
 };

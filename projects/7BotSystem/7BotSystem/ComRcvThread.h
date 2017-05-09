@@ -22,10 +22,12 @@ protected:
 public:
 	HANDLE m_hCom;
 	CString m_sCom;
-	char *m_sBuffer;
+	char m_sBuffer[256];
 	int m_nID;
 	afx_msg void OnCloseThread(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnReceive(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnMoveAngle(WPARAM wParam, LPARAM lParam);
+	bool m_bMoveFinish;
 };
 
 
