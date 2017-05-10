@@ -115,9 +115,13 @@
   <ItemGroup>
     <ClCompile Include="7BotSystem.cpp" />
     <ClCompile Include="7BotSystemDlg.cpp" />
-    <ClCompile Include="Arm7Bot.cpp" />
+    <ClCompile Include="Arm7Bot.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="ComRcvThread.cpp" />
-    <ClCompile Include="Pvector.cpp" />
+    <ClCompile Include="Pvector.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SerialDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -17,7 +17,7 @@ IMPLEMENT_DYNCREATE(CComRcvThread, CWinThread)
 CComRcvThread::CComRcvThread()
 	: m_hCom(INVALID_HANDLE_VALUE)
 	, m_sCom("")
-	, m_bMoveFinish(false)
+	, m_bMoveFinish(true)
 {
 }
 
@@ -25,7 +25,7 @@ CComRcvThread::CComRcvThread(CString comName, int ID)
 	: m_hCom(INVALID_HANDLE_VALUE)
 	, m_sCom(comName)
 	, m_nID(ID)
-	, m_bMoveFinish(false)
+	, m_bMoveFinish(true)
 {
 }
 
@@ -87,6 +87,7 @@ END_MESSAGE_MAP()
 
 void CComRcvThread::OnCloseThread(WPARAM wParam, LPARAM lParam)
 {
+	CloseHandle(m_hCom);
 	AfxEndThread(0);
 }
 
@@ -99,23 +100,25 @@ void CComRcvThread::OnReceive(WPARAM wParam, LPARAM lParam)
 	if (ReadFile(m_hCom, readBuffer, strlen(readBuffer), &readBytes, NULL))
 	{
 		strcpy(m_sBuffer, "");
-		int i;
-		for (i = 0; i < strlen(readBuffer); i++)
+		int i = 0;
+		for (int j = 0; j < strlen(readBuffer); j++)
 		{
-			if (readBuffer[i] == (char)0xFD)
+			if (readBuffer[j] == (char)0xFD)
 			{
-				if (readBuffer[i + 1] == (char)0x01)
+				j++;
+				if (readBuffer[j++] == (char)0x01)
 				{
 					m_bMoveFinish = true;
 					AfxGetApp()->m_pMainWnd->PostMessage(WM_MOVEFINISH, NULL, NULL);
 				}
 				// TODO...
 			}
-			else if (readBuffer[i] < 0)
+			else if (readBuffer[j] < 0)
 			{
 				break;
 			}
-			m_sBuffer[i] = readBuffer[i];
+			m_sBuffer[i] = readBuffer[j];
+			i++;
 		}
 		m_sBuffer[i] = 0;
 		COPYDATASTRUCT cds;
@@ -132,18 +135,18 @@ void CComRcvThread::OnMoveAngle(WPARAM wParam, LPARAM lParam)
 	double angles[SERVO_NUM];
 	char writeBuffer[2 * SERVO_NUM + 2];
 	DWORD writeBytes;
-	writeBuffer[0] = 0xFE;
-	writeBuffer[1] = 0x01;
+	writeBuffer[0] = (char)0xFE;
+	writeBuffer[1] = (char)0x09;
 	for (int i = 0; i < SERVO_NUM; i++)
 	{
 		angles[i] = *(double *)(wParam + i * sizeof(double));
-		writeBuffer[2 * i + 2] = (int)(angles[i] / 0.18) / 128;
-		writeBuffer[2 * i + 3] = (int)(angles[i] / 0.18) % 128;
+		writeBuffer[2 * i + 2] = (int)(angles[i] * 1000 / PI) / 128;
+		writeBuffer[2 * i + 3] = (int)(angles[i] * 1000 / PI) % 128;
 	}
 
 	m_bMoveFinish = false;
 
-	if (!WriteFile(m_hCom, writeBuffer, strlen(writeBuffer), &writeBytes, NULL))
+	if (!WriteFile(m_hCom, writeBuffer, 2 * SERVO_NUM + 2, &writeBytes, NULL))
 	{
 		AfxMessageBox(m_sCom + _T("·¢ËÍÊ§°Ü£¡"));
 	}

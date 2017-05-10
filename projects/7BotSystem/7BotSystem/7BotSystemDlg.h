@@ -45,6 +45,7 @@ public:
 	afx_msg LRESULT OnComError(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnComSuccess(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg LRESULT OnMoveFinish(WPARAM wParam, LPARAM lParam);
 
 private:
 	Arm7Bot arm;

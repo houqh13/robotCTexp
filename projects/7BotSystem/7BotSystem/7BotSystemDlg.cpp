@@ -212,7 +212,7 @@ void CMy7BotSystemDlg::OnBnClickedButtonCloseCom3()
 	// 关闭窗口
 	if (m_dlgCom[0] != NULL)
 	{
-		delete m_dlgCom[0];
+		m_dlgCom[0]->SendMessage(WM_CLOSE);
 	}
 }
 
@@ -229,27 +229,32 @@ void CMy7BotSystemDlg::OnBnClickedButtonCloseCom4()
 	// 关闭窗口
 	if (m_dlgCom[1] != NULL)
 	{
-		delete m_dlgCom[1];
+		m_dlgCom[1]->SendMessage(WM_CLOSE);
 	}
 }
 
 
 LRESULT CMy7BotSystemDlg::OnComError(WPARAM wParam, LPARAM lParam)
 {
-	for (int i = 0; i < 2; i++)
+	if (wParam == (int)(void *)m_thCom[0])
 	{
-		if (wParam == (int)(void *)m_thCom[i])
-		{
-			AfxMessageBox(m_thCom[i]->m_sCom + _T("无法打开！"));
+		AfxMessageBox(_T("Com3无法打开！"));
 
-			m_thCom[i]->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
-			m_thCom[i] = NULL;
-			GetDlgItem(IDC_BUTTON_OPENCOM3)->EnableWindow(TRUE);
-			GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
-
-			break;
-		}
+		m_thCom[0]->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
+		m_thCom[0] = NULL;
+		GetDlgItem(IDC_BUTTON_OPENCOM3)->EnableWindow(TRUE);
+		GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
 	}
+	else if (wParam == (int)(void *)m_thCom[1])
+	{
+		AfxMessageBox(_T("Com4无法打开！"));
+
+		m_thCom[1]->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
+		m_thCom[1] = NULL;
+		GetDlgItem(IDC_BUTTON_OPENCOM4)->EnableWindow(TRUE);
+		GetDlgItem(IDC_BUTTON_CLOSECOM4)->EnableWindow(FALSE);
+	}
+
 	return 0;
 }
 
@@ -309,7 +314,38 @@ void CMy7BotSystemDlg::OnBnClickedButtonStart()
 	{
 		m_thCom[i]->PostThreadMessage(WM_MOVEANGLE, (WPARAM)arm.theta, NULL);
 	}
+	  
 	GetDlgItem(IDC_BUTTON_START)->EnableWindow(FALSE);
+}
+
+
+LRESULT CMy7BotSystemDlg::OnMoveFinish(WPARAM wParam, LPARAM lParam)
+{
+	if (m_thCom[0]->m_bMoveFinish && m_thCom[1]->m_bMoveFinish)
+	{
+		if (calculate())
+		{
+			angle = - angle;
+			while (calculate())
+			{
+				angle += delta;
+			}
+		}
+		angle += delta;
+
+		if (angle == 0)
+		{
+			GetDlgItem(IDC_BUTTON_START)->EnableWindow(TRUE);
+		}
+		else
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				m_thCom[i]->PostThreadMessage(WM_MOVEANGLE, (WPARAM)arm.theta, NULL);
+			}
+		}
+	}
+	return 0;
 }
 
 

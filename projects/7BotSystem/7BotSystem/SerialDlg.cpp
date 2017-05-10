@@ -1,11 +1,11 @@
 // SerialDlg.cpp : 实现文件
 //
 
+#include "stdafx.h"
 #include "7BotSystem.h"
 #include "afxdialogex.h"
 #include "Define.h"
 #include "SerialDlg.h"
-#include "stdafx.h"
 
 
 // CSerialDlg 对话框
