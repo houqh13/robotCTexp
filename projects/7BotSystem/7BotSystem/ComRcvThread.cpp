@@ -41,7 +41,7 @@ BOOL CComRcvThread::InitInstance()
 	m_hCom = CreateFile(m_sCom, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 	if (m_hCom == INVALID_HANDLE_VALUE)
 	{
-		AfxGetApp()->m_pMainWnd->PostMessage(WM_COMERROR, (int)(void *)this, NULL);
+		AfxGetApp()->m_pMainWnd->PostMessage(WM_COMERROR, m_nID, NULL);
 		return TRUE;
 	}
 
@@ -63,7 +63,7 @@ BOOL CComRcvThread::InitInstance()
 	SetCommTimeouts(m_hCom, &timeouts);
 	PurgeComm(m_hCom, PURGE_RXCLEAR | PURGE_TXCLEAR);		// Çå¿Õ»º³åÇø
 	
-	AfxGetApp()->m_pMainWnd->PostMessage(WM_COMSUCCESS, (int)(void *)this, NULL);
+	AfxGetApp()->m_pMainWnd->PostMessage(WM_COMSUCCESS, m_nID, NULL);
 
 	return TRUE;
 }
@@ -94,12 +94,12 @@ void CComRcvThread::OnCloseThread(WPARAM wParam, LPARAM lParam)
 
 void CComRcvThread::OnReceive(WPARAM wParam, LPARAM lParam)
 {
-	char readBuffer[256];
+	char readBuffer[1024];
 	DWORD readBytes;
 
 	if (ReadFile(m_hCom, readBuffer, strlen(readBuffer), &readBytes, NULL))
 	{
-		strcpy(m_sBuffer, "");
+		strcpy(m_sReadBuffer, "");
 		int i = 0;
 		for (int j = 0; j < strlen(readBuffer); j++)
 		{
@@ -109,6 +109,15 @@ void CComRcvThread::OnReceive(WPARAM wParam, LPARAM lParam)
 				if (readBuffer[j++] == (char)0x01)
 				{
 					m_bMoveFinish = true;
+					
+					DWORD writeBytes;
+					m_sWriteBuffer[0] = (char)0xFE;
+					m_sWriteBuffer[1] = (char)0x01;
+					if (!WriteFile(m_hCom, m_sWriteBuffer, 2, &writeBytes, NULL))
+					{
+						AfxMessageBox(m_sCom + _T("·¢ËÍÊ§°Ü£¡"));
+					}
+
 					AfxGetApp()->m_pMainWnd->PostMessage(WM_MOVEFINISH, NULL, NULL);
 				}
 				// TODO...
@@ -117,14 +126,14 @@ void CComRcvThread::OnReceive(WPARAM wParam, LPARAM lParam)
 			{
 				break;
 			}
-			m_sBuffer[i] = readBuffer[j];
+			m_sReadBuffer[i] = readBuffer[j];
 			i++;
 		}
-		m_sBuffer[i] = 0;
+		m_sReadBuffer[i] = 0;
 		COPYDATASTRUCT cds;
 		cds.dwData = 0;
-		cds.cbData = strlen(m_sBuffer);
-		cds.lpData = (void *)m_sBuffer;
+		cds.cbData = strlen(m_sReadBuffer);
+		cds.lpData = (void *)m_sReadBuffer;
 		((CMy7BotSystemDlg *)AfxGetApp()->m_pMainWnd)->m_dlgCom[m_nID]->SendMessage(WM_COPYDATA, (WPARAM)this->m_hThread, (LPARAM)&cds);
 	}
 }
@@ -133,20 +142,19 @@ void CComRcvThread::OnReceive(WPARAM wParam, LPARAM lParam)
 void CComRcvThread::OnMoveAngle(WPARAM wParam, LPARAM lParam)
 {
 	double angles[SERVO_NUM];
-	char writeBuffer[2 * SERVO_NUM + 2];
 	DWORD writeBytes;
-	writeBuffer[0] = (char)0xFE;
-	writeBuffer[1] = (char)0x09;
+	m_sWriteBuffer[0] = (char)0xFE;
+	m_sWriteBuffer[1] = (char)0x09;
 	for (int i = 0; i < SERVO_NUM; i++)
 	{
 		angles[i] = *(double *)(wParam + i * sizeof(double));
-		writeBuffer[2 * i + 2] = (int)(angles[i] * 1000 / PI) / 128;
-		writeBuffer[2 * i + 3] = (int)(angles[i] * 1000 / PI) % 128;
+		m_sWriteBuffer[2 * i + 2] = (int)(angles[i] * 1000 / PI) / 128;
+		m_sWriteBuffer[2 * i + 3] = (int)(angles[i] * 1000 / PI) % 128;
 	}
 
 	m_bMoveFinish = false;
 
-	if (!WriteFile(m_hCom, writeBuffer, 2 * SERVO_NUM + 2, &writeBytes, NULL))
+	if (!WriteFile(m_hCom, m_sWriteBuffer, 2 * SERVO_NUM + 2, &writeBytes, NULL))
 	{
 		AfxMessageBox(m_sCom + _T("·¢ËÍÊ§°Ü£¡"));
 	}

@@ -115,7 +115,7 @@ BOOL CMy7BotSystemDlg::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_CLOSECOM4)->EnableWindow(FALSE);
 
-	arm.theta[6] = 45.0;
+	arm.theta[6] = PI / 4;
 	center.x = 0.0;
 	center.y = 265.0;
 	center.z = 200.0;
@@ -236,7 +236,7 @@ void CMy7BotSystemDlg::OnBnClickedButtonCloseCom4()
 
 LRESULT CMy7BotSystemDlg::OnComError(WPARAM wParam, LPARAM lParam)
 {
-	if (wParam == (int)(void *)m_thCom[0])
+	if (wParam == 0)
 	{
 		AfxMessageBox(_T("Com3无法打开！"));
 
@@ -245,7 +245,7 @@ LRESULT CMy7BotSystemDlg::OnComError(WPARAM wParam, LPARAM lParam)
 		GetDlgItem(IDC_BUTTON_OPENCOM3)->EnableWindow(TRUE);
 		GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
 	}
-	else if (wParam == (int)(void *)m_thCom[1])
+	else if (wParam == 1)
 	{
 		AfxMessageBox(_T("Com4无法打开！"));
 
@@ -261,23 +261,16 @@ LRESULT CMy7BotSystemDlg::OnComError(WPARAM wParam, LPARAM lParam)
 
 LRESULT CMy7BotSystemDlg::OnComSuccess(WPARAM wParam, LPARAM lParam)
 {
-	for (int i = 0; i < 2; i++)
+	SetTimer(wParam, 200, NULL);
+
+	// 打开窗口输出串口信息
+	if (m_dlgCom[wParam] == NULL)
 	{
-		if (wParam == (int)(void *)m_thCom[i])
-		{
-			SetTimer(i, 200, NULL);
-
-			// 打开窗口输出串口信息
-			if (m_dlgCom[i] == NULL)
-			{
-				m_dlgCom[i] = new CSerialDlg(_T("Serial Monitor : ") + m_thCom[i]->m_sCom, (CWnd *)this);
-				m_dlgCom[i]->Create(IDD_SERIAL_DIALOG);
-			}
-  			m_dlgCom[i]->ShowWindow(SW_SHOW);
-
-			break;
-		}
+		m_dlgCom[wParam] = new CSerialDlg(_T("Serial Monitor : ") + m_thCom[wParam]->m_sCom, (CWnd *)this);
+		m_dlgCom[wParam]->Create(IDD_SERIAL_DIALOG);
 	}
+	m_dlgCom[wParam]->ShowWindow(SW_SHOW);
+
 	return 0;
 }
 
@@ -356,7 +349,7 @@ int CMy7BotSystemDlg::calculate()
 {
 	PVector j6(center);
 	PVector vec56;
-	PVector vec67(0.0, 0.0, 1.0);
+	PVector vec67(1.0, 0.0, 0.0);
 
 	j6.x += radius * sin(angle / 180 * PI);
 	j6.y -= radius * cos(angle / 180 * PI);

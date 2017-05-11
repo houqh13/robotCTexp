@@ -22,7 +22,8 @@ protected:
 public:
 	HANDLE m_hCom;
 	CString m_sCom;
-	char m_sBuffer[256];
+	char m_sReadBuffer[1024];
+	char m_sWriteBuffer[30];
 	int m_nID;
 	afx_msg void OnCloseThread(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnReceive(WPARAM wParam, LPARAM lParam);
