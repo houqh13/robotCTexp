@@ -34,6 +34,8 @@
 #define WM_CLOSETHREAD		WM_USER + 0x01
 #define WM_RECEIVE			WM_USER + 0x02
 #define WM_MOVEANGLE		WM_USER + 0x03
+#define WM_FRESHFRAME		WM_USER + 0x04
+#define WM_SAVEFRAME		WM_USER + 0x05
 
 // 工作线程通知消息
 #define WM_COMERROR			WM_USER + 0x11

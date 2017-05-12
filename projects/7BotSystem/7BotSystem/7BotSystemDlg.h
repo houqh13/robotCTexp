@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Arm7Bot.h"
+#include "CameraThread.h"
 #include "ComRcvThread.h"
 #include "Define.h"
 #include "SerialDlg.h"
@@ -37,6 +38,7 @@ protected:
 public:
 	CComRcvThread *m_thCom[2];
 	CSerialDlg *m_dlgCom[2];
+	CCameraThread *m_thCamera;
 	bool m_bMoveFinish[2];
 	bool m_bReverse;
 	afx_msg void OnBnClickedButtonStart();
@@ -44,6 +46,8 @@ public:
 	afx_msg void OnBnClickedButtonOpenCom4();
 	afx_msg void OnBnClickedButtonCloseCom3();
 	afx_msg void OnBnClickedButtonCloseCom4();
+	afx_msg void OnBnClickedButtonOpenCamera();
+	afx_msg void OnBnClickedButtonCloseCamera();
 	afx_msg LRESULT OnComError(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnComSuccess(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

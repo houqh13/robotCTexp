@@ -46,7 +46,7 @@ BOOL CComRcvThread::InitInstance()
 	}
 
 	// 配置串口
-	SetupComm(m_hCom, 256, 256);		// 缓冲区大小
+	SetupComm(m_hCom, 1024, 1024);		// 缓冲区大小
 	DCB dcb;
 	GetCommState(m_hCom, &dcb);
 	dcb.BaudRate = CBR_115200;			// 波特率
@@ -141,6 +141,8 @@ void CComRcvThread::OnReceive(WPARAM wParam, LPARAM lParam)
 
 void CComRcvThread::OnMoveAngle(WPARAM wParam, LPARAM lParam)
 {
+	Sleep(5000);
+
 	double angles[SERVO_NUM];
 	DWORD writeBytes;
 	m_sWriteBuffer[0] = (char)0xFE;

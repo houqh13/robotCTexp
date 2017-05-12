@@ -69,6 +69,8 @@ BEGIN_MESSAGE_MAP(CMy7BotSystemDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_OPENCOM4, &CMy7BotSystemDlg::OnBnClickedButtonOpenCom4)
 	ON_BN_CLICKED(IDC_BUTTON_CLOSECOM3, &CMy7BotSystemDlg::OnBnClickedButtonCloseCom3)
 	ON_BN_CLICKED(IDC_BUTTON_CLOSECOM4, &CMy7BotSystemDlg::OnBnClickedButtonCloseCom4)
+	ON_BN_CLICKED(IDC_BUTTON_OPENCAMERA, &CMy7BotSystemDlg::OnBnClickedButtonOpenCamera)
+	ON_BN_CLICKED(IDC_BUTTON_CLOSECAMERA, &CMy7BotSystemDlg::OnBnClickedButtonCloseCamera)
 	ON_MESSAGE(WM_COMERROR, &CMy7BotSystemDlg::OnComError)
 	ON_MESSAGE(WM_COMSUCCESS, &CMy7BotSystemDlg::OnComSuccess)
 	ON_WM_TIMER()
@@ -115,9 +117,11 @@ BOOL CMy7BotSystemDlg::OnInitDialog()
 		m_bMoveFinish[i] = true;
 	}
 	m_bReverse = false;
+	m_thCamera = NULL;
 
 	GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_CLOSECOM4)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_CLOSECAMERA)->EnableWindow(FALSE);
 
 	arm.theta[6] = PI / 4;
 	center.x = 0.0;
@@ -238,6 +242,31 @@ void CMy7BotSystemDlg::OnBnClickedButtonCloseCom4()
 }
 
 
+void CMy7BotSystemDlg::OnBnClickedButtonOpenCamera()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	m_thCamera = new CCameraThread(0);
+	if (m_thCamera->CreateThread())
+	{
+		GetDlgItem(IDC_BUTTON_OPENCAMERA)->EnableWindow(FALSE);
+		GetDlgItem(IDC_BUTTON_CLOSECAMERA)->EnableWindow(TRUE);
+	}
+
+	SetTimer(99, 200, NULL);
+}
+
+
+void CMy7BotSystemDlg::OnBnClickedButtonCloseCamera()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	m_thCamera->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
+	GetDlgItem(IDC_BUTTON_OPENCAMERA)->EnableWindow(TRUE);
+	GetDlgItem(IDC_BUTTON_CLOSECAMERA)->EnableWindow(FALSE);
+
+	KillTimer(99);
+}
+
+
 LRESULT CMy7BotSystemDlg::OnComError(WPARAM wParam, LPARAM lParam)
 {
 	if (wParam == 0)
@@ -290,6 +319,11 @@ void CMy7BotSystemDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 	}
 
+	if (nIDEvent == 99)
+	{
+		m_thCamera->PostThreadMessage(WM_FRESHFRAME, NULL, NULL);
+	}
+
 	CDialogEx::OnTimer(nIDEvent);
 }
 
@@ -298,7 +332,6 @@ void CMy7BotSystemDlg::OnBnClickedButtonStart()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	calculate();
-	angle += delta;
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -315,32 +348,26 @@ LRESULT CMy7BotSystemDlg::OnMoveFinish(WPARAM wParam, LPARAM lParam)
 	m_bMoveFinish[wParam] = true;
 	if (m_bMoveFinish[0] && m_bMoveFinish[1])
 	{
+		m_thCamera->PostThreadMessage(WM_SAVEFRAME, NULL, (long)angle);
 		if (!m_bReverse)
 		{
+			angle += delta;
 			if (calculate())
 			{
 				angle = - delta;
 				m_bReverse = true;
 				calculate();
-				angle = - delta;
-			}
-			else
-			{
-				angle += delta;
 			}
 		}
 		else
 		{
+			angle -= delta;
 			if (calculate())
 			{
 				angle = 0;
 				m_bReverse = false;
 				GetDlgItem(IDC_BUTTON_START)->EnableWindow(TRUE);
 				return 0;
-			}
-			else
-			{
-				angle -= delta;
 			}
 		}
 

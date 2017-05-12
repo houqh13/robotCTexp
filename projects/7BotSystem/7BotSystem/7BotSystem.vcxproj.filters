@@ -48,6 +48,9 @@
     <ClInclude Include="Define.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CameraThread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="7BotSystem.cpp">
@@ -69,6 +72,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Pvector.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraThread.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

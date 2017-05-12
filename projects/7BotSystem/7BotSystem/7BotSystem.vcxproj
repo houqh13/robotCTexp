@@ -104,6 +104,7 @@
     <ClInclude Include="7BotSystem.h" />
     <ClInclude Include="7BotSystemDlg.h" />
     <ClInclude Include="Arm7Bot.h" />
+    <ClInclude Include="CameraThread.h" />
     <ClInclude Include="ComRcvThread.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="PVector.h" />
@@ -118,6 +119,7 @@
     <ClCompile Include="Arm7Bot.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="CameraThread.cpp" />
     <ClCompile Include="ComRcvThread.cpp" />
     <ClCompile Include="Pvector.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
