@@ -37,6 +37,8 @@ protected:
 public:
 	CComRcvThread *m_thCom[2];
 	CSerialDlg *m_dlgCom[2];
+	bool m_bMoveFinish[2];
+	bool m_bReverse;
 	afx_msg void OnBnClickedButtonStart();
 	afx_msg void OnBnClickedButtonOpenCom3();
 	afx_msg void OnBnClickedButtonOpenCom4();

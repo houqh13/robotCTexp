@@ -113,12 +113,12 @@ void CComRcvThread::OnReceive(WPARAM wParam, LPARAM lParam)
 					DWORD writeBytes;
 					m_sWriteBuffer[0] = (char)0xFE;
 					m_sWriteBuffer[1] = (char)0x01;
-					if (!WriteFile(m_hCom, m_sWriteBuffer, 2, &writeBytes, NULL))
+					if (!WriteFile(m_hCom, m_sWriteBuffer, 3, &writeBytes, NULL))
 					{
 						AfxMessageBox(m_sCom + _T("·¢ËÍÊ§°Ü£¡"));
 					}
 
-					AfxGetApp()->m_pMainWnd->PostMessage(WM_MOVEFINISH, NULL, NULL);
+					AfxGetApp()->m_pMainWnd->PostMessage(WM_MOVEFINISH, m_nID, NULL);
 				}
 				// TODO...
 			}

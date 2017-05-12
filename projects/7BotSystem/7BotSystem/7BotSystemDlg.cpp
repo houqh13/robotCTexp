@@ -72,6 +72,7 @@ BEGIN_MESSAGE_MAP(CMy7BotSystemDlg, CDialogEx)
 	ON_MESSAGE(WM_COMERROR, &CMy7BotSystemDlg::OnComError)
 	ON_MESSAGE(WM_COMSUCCESS, &CMy7BotSystemDlg::OnComSuccess)
 	ON_WM_TIMER()
+	ON_MESSAGE(WM_MOVEFINISH, &CMy7BotSystemDlg::OnMoveFinish)
 END_MESSAGE_MAP()
 
 
@@ -111,7 +112,10 @@ BOOL CMy7BotSystemDlg::OnInitDialog()
 	{
 		m_thCom[i] = NULL;
 		m_dlgCom[i] = NULL;
+		m_bMoveFinish[i] = true;
 	}
+	m_bReverse = false;
+
 	GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_CLOSECOM4)->EnableWindow(FALSE);
 
@@ -293,19 +297,13 @@ void CMy7BotSystemDlg::OnTimer(UINT_PTR nIDEvent)
 void CMy7BotSystemDlg::OnBnClickedButtonStart()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (calculate())
-	{
-		angle = - angle;
-		while (calculate())
-		{
-			angle += delta;
-		}
-	}
+	calculate();
 	angle += delta;
 
 	for (int i = 0; i < 2; i++)
 	{
 		m_thCom[i]->PostThreadMessage(WM_MOVEANGLE, (WPARAM)arm.theta, NULL);
+		m_bMoveFinish[i] = false;
 	}
 	  
 	GetDlgItem(IDC_BUTTON_START)->EnableWindow(FALSE);
@@ -314,28 +312,42 @@ void CMy7BotSystemDlg::OnBnClickedButtonStart()
 
 LRESULT CMy7BotSystemDlg::OnMoveFinish(WPARAM wParam, LPARAM lParam)
 {
-	if (m_thCom[0]->m_bMoveFinish && m_thCom[1]->m_bMoveFinish)
+	m_bMoveFinish[wParam] = true;
+	if (m_bMoveFinish[0] && m_bMoveFinish[1])
 	{
-		if (calculate())
+		if (!m_bReverse)
 		{
-			angle = - angle;
-			while (calculate())
+			if (calculate())
+			{
+				angle = - delta;
+				m_bReverse = true;
+				calculate();
+				angle = - delta;
+			}
+			else
 			{
 				angle += delta;
 			}
 		}
-		angle += delta;
-
-		if (angle == 0)
-		{
-			GetDlgItem(IDC_BUTTON_START)->EnableWindow(TRUE);
-		}
 		else
 		{
-			for (int i = 0; i < 2; i++)
+			if (calculate())
 			{
-				m_thCom[i]->PostThreadMessage(WM_MOVEANGLE, (WPARAM)arm.theta, NULL);
+				angle = 0;
+				m_bReverse = false;
+				GetDlgItem(IDC_BUTTON_START)->EnableWindow(TRUE);
+				return 0;
 			}
+			else
+			{
+				angle -= delta;
+			}
+		}
+
+		for (int i = 0; i < 2; i++)
+		{
+			m_thCom[i]->PostThreadMessage(WM_MOVEANGLE, (WPARAM)arm.theta, NULL);
+			m_bMoveFinish[i] = false;
 		}
 	}
 	return 0;
