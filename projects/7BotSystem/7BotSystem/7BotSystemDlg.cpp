@@ -127,7 +127,7 @@ BOOL CMy7BotSystemDlg::OnInitDialog()
 	center.x = 0.0;
 	center.y = 265.0;
 	center.z = 200.0;
-	radius = 65.0;
+	radius = 100.0;
 	angle = 0.0;
 	delta = 5.0;
 
@@ -245,14 +245,14 @@ void CMy7BotSystemDlg::OnBnClickedButtonCloseCom4()
 void CMy7BotSystemDlg::OnBnClickedButtonOpenCamera()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	m_thCamera = new CCameraThread(0);
-	if (m_thCamera->CreateThread())
+	m_thCamera = (CCameraThread *)AfxBeginThread(RUNTIME_CLASS(CCameraThread));
+	if (m_thCamera != NULL)
 	{
 		GetDlgItem(IDC_BUTTON_OPENCAMERA)->EnableWindow(FALSE);
 		GetDlgItem(IDC_BUTTON_CLOSECAMERA)->EnableWindow(TRUE);
-	}
 
-	SetTimer(99, 200, NULL);
+		SetTimer(99, 100, NULL);
+	}
 }
 
 
@@ -260,6 +260,7 @@ void CMy7BotSystemDlg::OnBnClickedButtonCloseCamera()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	m_thCamera->PostThreadMessage(WM_CLOSETHREAD, NULL, NULL);
+	m_thCamera = NULL;
 	GetDlgItem(IDC_BUTTON_OPENCAMERA)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_CLOSECAMERA)->EnableWindow(FALSE);
 

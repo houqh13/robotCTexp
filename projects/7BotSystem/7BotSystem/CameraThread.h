@@ -2,6 +2,8 @@
 
 #include <opencv.hpp>
 
+using namespace cv;
+
 
 // CCameraThread
 
@@ -22,11 +24,13 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	//cv::Mat frame;
-	//cv::VideoCapture capture;
+	Mat frame;
+	Mat result;
+	VideoCapture capture;
 	afx_msg void OnCloseThread(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnFreshFrame(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnSaveFrame(WPARAM wParam, LPARAM lParam);
+	void mark();
 };
 
 

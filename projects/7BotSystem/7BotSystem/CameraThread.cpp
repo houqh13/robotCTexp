@@ -6,20 +6,16 @@
 #include "CameraThread.h"
 #include "Define.h"
 
-cv::Mat frame;
-cv::VideoCapture capture(0);
 
 // CCameraThread
 
 IMPLEMENT_DYNCREATE(CCameraThread, CWinThread)
 
 CCameraThread::CCameraThread()
-	//: capture(0)
 {
 }
 
 CCameraThread::CCameraThread(int camID)
-	//: capture(camID)
 {
 }
 
@@ -30,9 +26,13 @@ CCameraThread::~CCameraThread()
 BOOL CCameraThread::InitInstance()
 {
 	// TODO: 在此执行任意逐线程初始化
+	capture.open(CV_CAP_DSHOW);
 	capture.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
+
+	Sleep(2000);
 	capture >> frame;
+	result.create(frame.size(), frame.type());
 	
 	return TRUE;
 }
@@ -62,7 +62,11 @@ void CCameraThread::OnCloseThread(WPARAM wParam, LPARAM lParam)
 void CCameraThread::OnFreshFrame(WPARAM wParam, LPARAM lParam)
 {
 	//capture >> frame;
-	//cv::imshow("camera", frame);
+
+	//mark();
+
+	//imshow("camera", result);
+	//waitKey(30);
 }
 
 
@@ -71,9 +75,20 @@ void CCameraThread::OnSaveFrame(WPARAM wParam, LPARAM lParam)
 	Sleep(2000);
 
 	capture >> frame;
-	capture >> frame;
-	capture >> frame;
 	std::string road = "C:/Users/houqh13/Documents/Arduino/Almighty/robotCTexp/outputs/frame/"
 		+ std::to_string(lParam) + ".jpg";
-	cv::imwrite(road, frame);
+	imwrite(road, frame);
+}
+
+
+// CCameraThread 图像处理程序
+
+
+void CCameraThread::mark()
+{
+	Mat edge, gray;
+	cvtColor(frame, gray, CV_BGR2GRAY);
+	Canny(gray, edge, 8, 20);
+	result = Scalar::all(0);
+	frame.copyTo(result, edge);
 }
