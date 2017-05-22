@@ -41,13 +41,15 @@ public:
 	CCameraThread *m_thCamera;
 	bool m_bMoveFinish[2];
 	bool m_bReverse;
-	afx_msg void OnBnClickedButtonStart();
+	bool m_bFocusing;
 	afx_msg void OnBnClickedButtonOpenCom3();
 	afx_msg void OnBnClickedButtonOpenCom4();
 	afx_msg void OnBnClickedButtonCloseCom3();
 	afx_msg void OnBnClickedButtonCloseCom4();
 	afx_msg void OnBnClickedButtonOpenCamera();
 	afx_msg void OnBnClickedButtonCloseCamera();
+	afx_msg void OnBnClickedButtonFocus();
+	afx_msg void OnBnClickedButtonStart();
 	afx_msg LRESULT OnComError(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnComSuccess(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

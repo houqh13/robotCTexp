@@ -75,6 +75,7 @@ void CCameraThread::OnSaveFrame(WPARAM wParam, LPARAM lParam)
 	Sleep(2000);
 
 	capture >> frame;
+	capture >> frame;
 	std::string road = "C:/Users/houqh13/Documents/Arduino/Almighty/robotCTexp/outputs/frame/"
 		+ std::to_string(lParam) + ".jpg";
 	imwrite(road, frame);

@@ -64,13 +64,14 @@ BEGIN_MESSAGE_MAP(CMy7BotSystemDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON_START, &CMy7BotSystemDlg::OnBnClickedButtonStart)
 	ON_BN_CLICKED(IDC_BUTTON_OPENCOM3, &CMy7BotSystemDlg::OnBnClickedButtonOpenCom3)
 	ON_BN_CLICKED(IDC_BUTTON_OPENCOM4, &CMy7BotSystemDlg::OnBnClickedButtonOpenCom4)
 	ON_BN_CLICKED(IDC_BUTTON_CLOSECOM3, &CMy7BotSystemDlg::OnBnClickedButtonCloseCom3)
 	ON_BN_CLICKED(IDC_BUTTON_CLOSECOM4, &CMy7BotSystemDlg::OnBnClickedButtonCloseCom4)
 	ON_BN_CLICKED(IDC_BUTTON_OPENCAMERA, &CMy7BotSystemDlg::OnBnClickedButtonOpenCamera)
 	ON_BN_CLICKED(IDC_BUTTON_CLOSECAMERA, &CMy7BotSystemDlg::OnBnClickedButtonCloseCamera)
+	ON_BN_CLICKED(IDC_BUTTON_FOCUS, &CMy7BotSystemDlg::OnBnClickedButtonFocus)
+	ON_BN_CLICKED(IDC_BUTTON_START, &CMy7BotSystemDlg::OnBnClickedButtonStart)
 	ON_MESSAGE(WM_COMERROR, &CMy7BotSystemDlg::OnComError)
 	ON_MESSAGE(WM_COMSUCCESS, &CMy7BotSystemDlg::OnComSuccess)
 	ON_WM_TIMER()
@@ -118,6 +119,7 @@ BOOL CMy7BotSystemDlg::OnInitDialog()
 	}
 	m_bReverse = false;
 	m_thCamera = NULL;
+	m_bFocusing = false;
 
 	GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_CLOSECOM4)->EnableWindow(FALSE);
@@ -329,6 +331,20 @@ void CMy7BotSystemDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
+void CMy7BotSystemDlg::OnBnClickedButtonFocus()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	calculate();
+
+	for (int i = 0; i < 2; i++)
+	{
+		m_thCom[i]->PostThreadMessage(WM_MOVEANGLE, (WPARAM)arm.theta, NULL);
+		m_bMoveFinish[i] = false;
+	}
+	m_bFocusing = true;
+}
+
+
 void CMy7BotSystemDlg::OnBnClickedButtonStart()
 {
 	// TODO: 在此添加控件通知处理程序代码
@@ -339,7 +355,9 @@ void CMy7BotSystemDlg::OnBnClickedButtonStart()
 		m_thCom[i]->PostThreadMessage(WM_MOVEANGLE, (WPARAM)arm.theta, NULL);
 		m_bMoveFinish[i] = false;
 	}
-	  
+	m_bFocusing = false;
+	
+	GetDlgItem(IDC_BUTTON_FOCUS)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_START)->EnableWindow(FALSE);
 }
 
@@ -347,7 +365,7 @@ void CMy7BotSystemDlg::OnBnClickedButtonStart()
 LRESULT CMy7BotSystemDlg::OnMoveFinish(WPARAM wParam, LPARAM lParam)
 {
 	m_bMoveFinish[wParam] = true;
-	if (m_bMoveFinish[0] && m_bMoveFinish[1])
+	if (!m_bFocusing && m_bMoveFinish[0] && m_bMoveFinish[1])
 	{
 		m_thCamera->PostThreadMessage(WM_SAVEFRAME, NULL, (long)angle);
 		if (!m_bReverse)
@@ -367,6 +385,7 @@ LRESULT CMy7BotSystemDlg::OnMoveFinish(WPARAM wParam, LPARAM lParam)
 			{
 				angle = 0;
 				m_bReverse = false;
+				GetDlgItem(IDC_BUTTON_FOCUS)->EnableWindow(TRUE);
 				GetDlgItem(IDC_BUTTON_START)->EnableWindow(TRUE);
 				return 0;
 			}
