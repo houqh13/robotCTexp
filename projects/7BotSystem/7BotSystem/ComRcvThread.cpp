@@ -141,7 +141,7 @@ void CComRcvThread::OnReceive(WPARAM wParam, LPARAM lParam)
 
 void CComRcvThread::OnMoveAngle(WPARAM wParam, LPARAM lParam)
 {
-	Sleep(5000);
+	Sleep(1000);
 
 	double angles[SERVO_NUM];
 	DWORD writeBytes;

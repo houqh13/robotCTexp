@@ -76,6 +76,8 @@ BEGIN_MESSAGE_MAP(CMy7BotSystemDlg, CDialogEx)
 	ON_MESSAGE(WM_COMSUCCESS, &CMy7BotSystemDlg::OnComSuccess)
 	ON_WM_TIMER()
 	ON_MESSAGE(WM_MOVEFINISH, &CMy7BotSystemDlg::OnMoveFinish)
+	ON_MESSAGE(WM_ADJUST, &CMy7BotSystemDlg::OnAdjust)
+	ON_MESSAGE(WM_NEXTSTEP, &CMy7BotSystemDlg::OnNextStep)
 END_MESSAGE_MAP()
 
 
@@ -120,6 +122,7 @@ BOOL CMy7BotSystemDlg::OnInitDialog()
 	m_bReverse = false;
 	m_thCamera = NULL;
 	m_bFocusing = false;
+	m_bScanning = false;
 
 	GetDlgItem(IDC_BUTTON_CLOSECOM3)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_CLOSECOM4)->EnableWindow(FALSE);
@@ -324,7 +327,21 @@ void CMy7BotSystemDlg::OnTimer(UINT_PTR nIDEvent)
 
 	if (nIDEvent == 99)
 	{
-		m_thCamera->PostThreadMessage(WM_FRESHFRAME, NULL, NULL);
+		if (m_bFocusing)
+		{
+			m_thCamera->PostThreadMessage(WM_FRESHFRAME, true, true);
+		}
+		else
+		{
+			if (m_bScanning && m_bMoveFinish[0] && m_bMoveFinish[1])
+			{
+				m_thCamera->PostThreadMessage(WM_SAVEFRAME, NULL, (long)angle);
+			}
+			else
+			{
+				m_thCamera->PostThreadMessage(WM_FRESHFRAME, false, false);
+			}
+		}
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -356,6 +373,7 @@ void CMy7BotSystemDlg::OnBnClickedButtonStart()
 		m_bMoveFinish[i] = false;
 	}
 	m_bFocusing = false;
+	m_bScanning = true;
 	
 	GetDlgItem(IDC_BUTTON_FOCUS)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_START)->EnableWindow(FALSE);
@@ -365,37 +383,74 @@ void CMy7BotSystemDlg::OnBnClickedButtonStart()
 LRESULT CMy7BotSystemDlg::OnMoveFinish(WPARAM wParam, LPARAM lParam)
 {
 	m_bMoveFinish[wParam] = true;
-	if (!m_bFocusing && m_bMoveFinish[0] && m_bMoveFinish[1])
-	{
-		m_thCamera->PostThreadMessage(WM_SAVEFRAME, NULL, (long)angle);
-		if (!m_bReverse)
-		{
-			angle += delta;
-			if (calculate())
-			{
-				angle = - delta;
-				m_bReverse = true;
-				calculate();
-			}
-		}
-		else
-		{
-			angle -= delta;
-			if (calculate())
-			{
-				angle = 0;
-				m_bReverse = false;
-				GetDlgItem(IDC_BUTTON_FOCUS)->EnableWindow(TRUE);
-				GetDlgItem(IDC_BUTTON_START)->EnableWindow(TRUE);
-				return 0;
-			}
-		}
+	//if (!m_bFocusing && m_bMoveFinish[0] && m_bMoveFinish[1])
+	//{
+	//	m_thCamera->PostThreadMessage(WM_SAVEFRAME, NULL, (long)angle);
+	//}
+	return 0;
+}
 
-		for (int i = 0; i < 2; i++)
+
+LRESULT CMy7BotSystemDlg::OnAdjust(WPARAM wParam, LPARAM lParam)
+{
+	double bx = *(double *)(wParam + 0 * sizeof(double));
+	double by = *(double *)(wParam + 1 * sizeof(double));
+	double dth = *(double *)(wParam + 2 * sizeof(double));	// dth>0代表顺时针调整
+	double dd = *(double *)(wParam + 3 * sizeof(double));
+
+	double dx = ALPHATAN * (2 * radius - DELTA) * bx / 1280;
+	double dz = ALPHATAN * (2 * radius - DELTA) * by / 1280;
+	double dD = (1 / dd - 1) * (2 * radius - DELTA);
+
+	j6.x += (- vec56.y * dx + vec56.x * dD) * 1;
+	j6.y += (vec56.x * dx + vec56.y * dD) * 1;
+	j6.z += dz * 1;
+	arm.theta[5] += dth * 1;
+	if (arm.theta[5] > 2 * PI)
+	{
+		arm.theta[5] -= 2 * PI;
+	}
+
+	arm.IK5(j6, vec56);
+
+	m_thCom[0]->PostThreadMessage(WM_MOVEANGLE, (WPARAM)arm.theta, NULL);
+	m_bMoveFinish[0] = false;
+
+	return 0;
+}
+
+
+LRESULT CMy7BotSystemDlg::OnNextStep(WPARAM wParam, LPARAM lParam)
+{
+	if (!m_bReverse)
+	{
+		angle += delta;
+		if (calculate())
 		{
-			m_thCom[i]->PostThreadMessage(WM_MOVEANGLE, (WPARAM)arm.theta, NULL);
-			m_bMoveFinish[i] = false;
+			angle = - delta;
+			m_bReverse = true;
+			calculate();
 		}
+	}
+	else
+	{
+		angle -= delta;
+		if (calculate())
+		{
+			angle = 0;
+			m_bReverse = false;
+			m_bScanning = false;
+			GetDlgItem(IDC_BUTTON_FOCUS)->EnableWindow(TRUE);
+			GetDlgItem(IDC_BUTTON_START)->EnableWindow(TRUE);
+			m_thCamera->video.release();
+			return 0;
+		}
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		m_thCom[i]->PostThreadMessage(WM_MOVEANGLE, (WPARAM)arm.theta, NULL);
+		m_bMoveFinish[i] = false;
 	}
 	return 0;
 }
@@ -406,14 +461,13 @@ LRESULT CMy7BotSystemDlg::OnMoveFinish(WPARAM wParam, LPARAM lParam)
 
 int CMy7BotSystemDlg::calculate()
 {
-	PVector j6(center);
-	PVector vec56;
-	PVector vec67(1.0, 0.0, 0.0);
+	j6 = PVector(center);
+	vec67 = PVector(1.0, 0.0, 0.0);
 
 	j6.x += radius * sin(angle / 180 * PI);
 	j6.y -= radius * cos(angle / 180 * PI);
 	vec56.x = - sin(angle / 180 * PI);
 	vec56.y = cos(angle / 180 * PI);
-
+	
 	return arm.IK6(j6, vec56, vec67);
 }

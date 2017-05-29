@@ -3,7 +3,7 @@
 #include <opencv.hpp>
 
 using namespace cv;
-
+using namespace std;
 
 // CCameraThread
 
@@ -27,10 +27,17 @@ public:
 	Mat frame;
 	Mat result;
 	VideoCapture capture;
+	VideoWriter video;
+	RotatedRect blackRect;
+	RotatedRect whiteRect;
+	RotatedRect blackInitRect;
+	RotatedRect whiteInitRect;
 	afx_msg void OnCloseThread(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnFreshFrame(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnSaveFrame(WPARAM wParam, LPARAM lParam);
-	void mark();
+	void mark(bool fit, bool init);
+
+	double delta[4];
 };
 
 

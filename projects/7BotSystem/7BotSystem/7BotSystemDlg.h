@@ -42,6 +42,7 @@ public:
 	bool m_bMoveFinish[2];
 	bool m_bReverse;
 	bool m_bFocusing;
+	bool m_bScanning;
 	afx_msg void OnBnClickedButtonOpenCom3();
 	afx_msg void OnBnClickedButtonOpenCom4();
 	afx_msg void OnBnClickedButtonCloseCom3();
@@ -54,6 +55,8 @@ public:
 	afx_msg LRESULT OnComSuccess(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg LRESULT OnMoveFinish(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnAdjust(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnNextStep(WPARAM wParam, LPARAM lParam);
 
 private:
 	Arm7Bot arm;
@@ -61,5 +64,8 @@ private:
 	double radius;
 	double angle;
 	double delta;
+	PVector j6;
+	PVector vec56;
+	PVector vec67;
 	int calculate();
 };

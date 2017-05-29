@@ -26,6 +26,9 @@
 #define LENGTH_G		12.00
 #define LENGTH_H		29.42
 
+// 图像标定参数
+#define DELTA			26.105
+#define ALPHATAN		0.87118
 
 // 7BotSystem 自定义消息列表
 
@@ -36,8 +39,11 @@
 #define WM_MOVEANGLE		WM_USER + 0x03
 #define WM_FRESHFRAME		WM_USER + 0x04
 #define WM_SAVEFRAME		WM_USER + 0x05
+//#define WM_GETINITPOS		WM_USER + 0x06
 
 // 工作线程通知消息
 #define WM_COMERROR			WM_USER + 0x11
 #define WM_COMSUCCESS		WM_USER + 0x12
 #define WM_MOVEFINISH		WM_USER + 0x13
+#define WM_NEXTSTEP			WM_USER + 0x14
+#define WM_ADJUST			WM_USER + 0x15

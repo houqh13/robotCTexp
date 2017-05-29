@@ -7,8 +7,8 @@
 #include <Arm7Bot.h>
 
 Arm7Bot Arm;
-double offset[SERVO_NUM] = {-4.375, 1.000, 0.125, 3.125, -3.000, 0, 0};			// north
-//double offset[SERVO_NUM] = {-7.125, -0.500, 4.375, -3.875, -1.000, 2.000, 0};		// south
+//double offset[SERVO_NUM] = {-4.375, 1.000, 0.125, 3.125, -3.000, 0, 0};			// north
+double offset[SERVO_NUM] = {-7.125, -0.500, 4.375, -3.875, -1.000, 2.000, 0};		// south
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -17,7 +17,7 @@ void setup() {
 	Arm.initialMove();
 	for (int i = 0; i < SERVO_NUM; i++)
 	{
-		Arm.maxSpeed[i] = 40;
+		Arm.maxSpeed[i] = 60;
 	}
 }
 
