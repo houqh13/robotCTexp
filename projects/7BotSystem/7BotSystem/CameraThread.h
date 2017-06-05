@@ -32,12 +32,14 @@ public:
 	RotatedRect whiteRect;
 	RotatedRect blackInitRect;
 	RotatedRect whiteInitRect;
+	CStdioFile txtFile;
 	afx_msg void OnCloseThread(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnFreshFrame(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnSaveFrame(WPARAM wParam, LPARAM lParam);
 	void mark(bool fit, bool init);
 
 	double delta[4];
+	int iterCount;
 };
 
 

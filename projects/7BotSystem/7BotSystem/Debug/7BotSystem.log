@@ -1,4 +1,4 @@
-﻿生成启动时间为 2017/5/30 4:09:22。
+﻿生成启动时间为 2017/6/5 17:55:30。
      1>项目“C:\Users\houqh13\Documents\Arduino\Almighty\robotCTexp\projects\7BotSystem\7BotSystem\7BotSystem.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _CRT_SECURE_NO_DEPRECATE /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\7BotSystem.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt 7BotSystemDlg.cpp CameraThread.cpp
@@ -6,9 +6,9 @@
      1>c:\program files\opencv\build\include\opencv2\core\mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>c:\program files\opencv\build\include\opencv2\core\persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>c:\program files\opencv\build\include\opencv2\core\utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-     1>c:\users\houqh13\documents\arduino\almighty\robotctexp\projects\7botsystem\7botsystem\camerathread.cpp(71): warning C4800: “LPARAM”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>c:\users\houqh13\documents\arduino\almighty\robotctexp\projects\7botsystem\7botsystem\camerathread.cpp(71): warning C4800: “WPARAM”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>c:\users\houqh13\documents\arduino\almighty\robotctexp\projects\7botsystem\7botsystem\camerathread.cpp(128): warning C4018: “<”: 有符号/无符号不匹配
+     1>c:\users\houqh13\documents\arduino\almighty\robotctexp\projects\7botsystem\7botsystem\camerathread.cpp(77): warning C4800: “LPARAM”: 将值强制为布尔值“true”或“false”(性能警告)
+     1>c:\users\houqh13\documents\arduino\almighty\robotctexp\projects\7botsystem\7botsystem\camerathread.cpp(77): warning C4800: “WPARAM”: 将值强制为布尔值“true”或“false”(性能警告)
+     1>c:\users\houqh13\documents\arduino\almighty\robotctexp\projects\7botsystem\7botsystem\camerathread.cpp(156): warning C4018: “<”: 有符号/无符号不匹配
          7BotSystemDlg.cpp
      1>c:\program files\opencv\build\include\opencv2\core\mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
      1>c:\program files\opencv\build\include\opencv2\core\persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
@@ -29,4 +29,4 @@
 
 生成成功。
 
-已用时间 00:00:05.01
+已用时间 00:00:05.45

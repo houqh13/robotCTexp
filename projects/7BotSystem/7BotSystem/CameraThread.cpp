@@ -26,12 +26,16 @@ CCameraThread::~CCameraThread()
 BOOL CCameraThread::InitInstance()
 {
 	// TODO: 在此执行任意逐线程初始化
+	iterCount = 0;
+	txtFile.Open(_T("C:/Users/houqh13/Documents/Arduino/Almighty/robotCTexp/outputs/calibration.txt"),
+		CFile::typeText | CFile::modeCreate | CFile::modeWrite);
+
 	capture.open(CV_CAP_DSHOW);
 	capture.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
 
-	string road = "C:/Users/houqh13/Documents/Arduino/Almighty/robotCTexp/outputs/capture.avi";
-	video.open(road, CV_FOURCC('M','P','4','2'), 10, Size(1280, 720), true);
+	//video.open("C:/Users/houqh13/Documents/Arduino/Almighty/robotCTexp/outputs/capture.avi",
+	//	CV_FOURCC('M','P','4','2'), 10, Size(1280, 720), true);
 
 	Sleep(1000);
 	capture >> frame;
@@ -43,6 +47,8 @@ BOOL CCameraThread::InitInstance()
 int CCameraThread::ExitInstance()
 {
 	// TODO: 在此执行任意逐线程清理
+	txtFile.Close();
+
 	capture.release();
 	destroyWindow("camera");
 
@@ -81,22 +87,44 @@ void CCameraThread::OnSaveFrame(WPARAM wParam, LPARAM lParam)
 	capture >> frame;
 	mark(true, false);
 
-	//string road = "C:/Users/houqh13/Documents/Arduino/Almighty/robotCTexp/outputs/frame/"
-	//	+ to_string(lParam) + ".jpg";
-	//imwrite(road, result);
-
 	double bx = blackRect.center.x - blackInitRect.center.x;
 	double by = blackRect.center.y - blackInitRect.center.y;
 	double dth = atan2(blackRect.center.y - whiteRect.center.y, blackRect.center.x - whiteRect.center.x)
 		- atan2(blackInitRect.center.y - whiteInitRect.center.y, blackInitRect.center.x - whiteInitRect.center.x);
 	double dd = max(blackRect.size.height, blackRect.size.width) / max(blackInitRect.size.height, blackInitRect.size.width);
-	if (bx < 4 && bx > -4 && by < 4 && by > -4
-		&& dth < 0.06 && dth > -0.06 && dd < 1.02 && dd > 0.98)
+
+	if (iterCount == 0)
 	{
+		CString str;
+		str.Format(_T("%ld\t"), lParam);
+		txtFile.WriteString(str);
+		str.Format(_T("%lf\t%lf\t"), bx, by);
+		txtFile.WriteString(str);
+	}
+	else if (iterCount == 1)
+	{
+		CString str;
+		str.Format(_T("%lf\t%lf\t"), bx, by);
+		txtFile.WriteString(str);
+	}
+
+	if (bx < 3 && bx > -3 && by < 3 && by > -3
+		&& dth < 0.04 && dth > -0.04 && dd < 1.015 && dd > 0.985)
+	{
+		CString str;
+		str.Format(_T("%lf\t%lf\t"), bx, by);
+		txtFile.WriteString(str);
+		str.Format(_T("%d\n"), iterCount);
+		txtFile.WriteString(str);
+
+		iterCount = 0;
+
 		AfxGetApp()->m_pMainWnd->PostMessage(WM_NEXTSTEP, NULL, NULL);
 	}
 	else
 	{
+		iterCount++;
+
 		delta[0] = bx;
 		delta[1] = by;
 		delta[2] = dth;

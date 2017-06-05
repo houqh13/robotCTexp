@@ -374,6 +374,8 @@ void CMy7BotSystemDlg::OnBnClickedButtonStart()
 	}
 	m_bFocusing = false;
 	m_bScanning = true;
+	m_thCamera->video.open("C:/Users/houqh13/Documents/Arduino/Almighty/robotCTexp/outputs/capture.avi",
+		CV_FOURCC('M','P','4','2'), 10, Size(1280, 720), true);
 	
 	GetDlgItem(IDC_BUTTON_FOCUS)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_START)->EnableWindow(FALSE);
